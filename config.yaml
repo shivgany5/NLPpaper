@@ -1,0 +1,31 @@
+project: Semantic Understanding of Classical Literature
+experiment_name: LLM_vs_RAG_vs_FineTuning
+
+data:
+  raw_data_path: "data/raw/"
+  processed_data_path: "data/processed/"
+  vector_db_path: "chroma_db/"
+  chunk_size: 512
+  chunk_overlap: 50
+  embedding_model: "BAAI/bge-large-en-v1.5" # Excellent embedding model for retrieval
+
+models:
+  baseline:
+    model_id: "meta-llama/Meta-Llama-3-70B-Instruct"
+    quantization: "4bit"
+  rag:
+    model_id: "meta-llama/Meta-Llama-3-8B-Instruct"
+    re_ranker: "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    top_k: 5
+    quantization: "4bit"
+  fine_tuned:
+    base_model_id: "meta-llama/Meta-Llama-3-8B-Instruct"
+    adapter_path: "models/adapters/llama3-8b-classical"
+    instruction_pairs: 500
+    quantization: "4bit"
+
+evaluation:
+  metrics:
+    ragas: ["faithfulness", "answer_relevancy"]
+    traditional: ["bleu", "rouge"]
+  ground_truth_path: "data/processed/eval_ground_truth.json"
